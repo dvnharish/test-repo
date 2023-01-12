@@ -1,0 +1,26 @@
+<configuration>
+
+    <appender name="out" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <appender name="mask" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder class="ch.qos.logback.core.encoder.LayoutWrappingEncoder">
+            <layout class="com.test.app.util.RogersLogger">
+                <maskPattern>creditCardNumber='(.*?)'</maskPattern>
+                <maskPattern>password='(.*?)'</maskPattern>
+                <maskPattern>age=(\d+)</maskPattern>
+                <maskPattern>dateOfBirth='(.*?)'</maskPattern>
+                <pattern>%-5p [%d{ISO8601,UTC}] [%thread] %c: %m%n%rootException</pattern>
+            </layout>
+        </encoder>
+    </appender>
+
+    <root level="info">
+        <appender-ref ref="out"/>
+        <appender-ref ref="mask"/>
+    </root>
+
+</configuration>

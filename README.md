@@ -97,5 +97,19 @@ public class JwtVerificationFilter extends OncePerRequestFilter {
         }
         throw new IllegalArgumentException("Invalid Key Id: " + kid);
     }
+    
+    
+    private PublicKey readPublicKey(String x5c) {
+    try {
+        byte[] data = Base64.getDecoder().decode(x5c);
+        X509EncodedKeySpec spec = new X509EncodedKeySpec(data);
+        KeyFactory factory = KeyFactory.getInstance("RSA");
+        return factory.generatePublic(spec);
+    } catch (NoSuchAlgorithmException | InvalidKeySpecException ex) {
+        throw new IllegalArgumentException("Invalid Key", ex);
+    }
+}
+
+
 }
 ``

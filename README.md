@@ -59,7 +59,7 @@ public class JwtVerificationFilter extends OncePerRequestFilter {
             PublicKey publicKey = getPublicKeyFromAD(kid);
             // verify the token with the public key
 
-            Algorithm algorithm = Algorithm.RSA256(publicKey);
+            Algorithm algorithm = Algorithm.RSA256((RSAPublicKey) publicKey, RSASSAProvider.JavaCrypto);
             JWTVerifier verifier = JWT.require(algorithm)
                     .build();
             DecodedJWT jwt = verifier.verify(token);

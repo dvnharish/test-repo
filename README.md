@@ -112,4 +112,59 @@ public class JwtVerificationFilter extends OncePerRequestFilter {
 
 
 }
+
+
+
+
+import org.springframework.security.core.GrantedAuthority;
+import java.util.Collection;
+
+public class JwtAuthenticationToken implements Authentication {
+
+    private DecodedJWT jwt;
+    private Collection<? extends GrantedAuthority> authorities;
+
+    public JwtAuthenticationToken(DecodedJWT jwt, Collection<? extends GrantedAuthority> authorities) {
+        this.jwt = jwt;
+        this.authorities = authorities;
+    }
+
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return authorities;
+    }
+
+    @Override
+    public Object getCredentials() {
+        return jwt;
+    }
+
+    @Override
+    public Object getDetails() {
+        return jwt;
+    }
+
+    @Override
+    public Object getPrincipal() {
+        return jwt;
+    }
+
+    @Override
+    public boolean isAuthenticated() {
+        return true;
+    }
+
+    @Override
+    public void setAuthenticated(boolean isAuthenticated) throws IllegalArgumentException {
+        throw new IllegalArgumentException("Cannot set authenticated on JwtAuthenticationToken");
+    }
+
+    @Override
+    public String getName() {
+        return jwt.getSubject();
+    }
+}
+
+
+
 ``

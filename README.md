@@ -32,3 +32,30 @@ public class TestClass {
 @Target({ElementType.METHOD})
 @interface WithMockJwtAuth {
 }
+
+
+
+
+
+@RunWith(MockitoJUnitRunner.class)
+public class YourControllerTest {
+  
+  @Mock
+  private JwtAuthFilter jwtAuthFilter;
+  
+  @InjectMocks
+  private YourController yourController;
+  
+  @Test
+  public void testEndpoint() {
+    // Arrange
+    doNothing().when(jwtAuthFilter).doFilter(any(ServletRequest.class), any(ServletResponse.class), any(FilterChain.class));
+    
+    // Act
+    ResponseEntity<YourResponse> response = yourController.yourEndpoint(yourRequest);
+    
+    // Assert
+    // Add your assertions here
+  }
+}
+

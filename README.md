@@ -59,3 +59,42 @@ public class YourControllerTest {
   }
 }
 
+
+
+
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+
+@RunWith(MockitoJUnitRunner.class)
+public class YourControllerTest {
+
+  private MockMvc mockMvc;
+
+  @Mock
+  private YourFilter yourFilter;
+
+  @InjectMocks
+  private YourController yourController;
+
+  @Before
+  public void setup() {
+    mockMvc = MockMvcBuilders.standaloneSetup(yourController)
+      .addFilters(yourFilter)
+      .build();
+  }
+
+  @Test
+  public void testGetMethod() throws Exception {
+    mockMvc.perform(get("/your-endpoint"))
+      .andExpect(status().isOk());
+  }
+
+  @Test
+  public void testPostMethod() throws Exception {
+    mockMvc.perform(post("/your-endpoint"))
+      .andExpect(status().isOk());
+  }
+}
+
+
+

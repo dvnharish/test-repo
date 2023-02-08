@@ -123,3 +123,16 @@ public class MyControllerTest {
         });
   }
 }
+
+
+
+```
+POST https://login.microsoftonline.com/{tenant}/oauth2/v2.0/token
+Content-Type: application/x-www-form-urlencoded
+
+client_id={client_id}
+&scope=https://graph.microsoft.com/.default
+&refresh_token={refresh_token}
+&grant_type=refresh_token
+&client_secret={client_secret}
+

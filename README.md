@@ -1,138 +1,24 @@
 ```
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.context.SecurityContext;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.test.context.support.WithMockUser;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.context.web.WebAppConfiguration;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import org.springframework.web.context.WebApplicationContext;
-
-import java.util.ArrayList;
-import java.util.List;
-
-import static org.junit.Assert.assertEquals;
-import static org.mockito.Mockito.when;
-import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@RunWith(MockitoJUnitRunner.class)
-@ContextConfiguration
-@WebAppConfiguration
-public class MyControllerTest {
-  
-  @Mock
-  private SecurityContext securityContext;
+@Test
+public void testPostPortfolioComment() throws Exception {
+    String accessToken = getAccessToken();
 
-  @Autowired
-  private WebApplicationContext wac;
-
-  private MockMvc mockMvc;
-
-  @Test
-  public void testMethod() throws Exception {
-    List<GrantedAuthority> authorities = new ArrayList<>();
-    authorities.add(new SimpleGrantedAuthority("user_read"));
-    
-    UserDetails userDetails = new User("TestUser", "TestPassword", authorities);
-    when(securityContext.getAuthentication().getPrincipal()).thenReturn(userDetails);
-    SecurityContextHolder.setContext(securityContext);
-
-    this.mockMvc = MockMvcBuilders.webAppContextSetup(this.wac)
-        .apply(springSecurity())
-        .build();
-
-    this.mockMvc.perform(get("/my-url"))
-        .andExpect(status().isOk())
-        .andExpect(result -> {
-          // Assert the response body
-        });
-  }
+    String requestBody = "{\"comment\":\"Test Comment\"}";
+    mockMvc.perform(post("/portfolio/comments")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(requestBody)
+            .with(user("admin").roles("ADMIN"))
+            .header("Authorization", "Bearer " + accessToken))
+            .andExpect(status().isCreated());
 }
 
-
-
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.context.SecurityContext;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.test.context.support.WithMockUser;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.context.web.WebAppConfiguration;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import org.springframework.web.context.WebApplicationContext;
-
-import java.util.ArrayList;
-import java.util.List;
-
-import static org.junit.Assert.assertEquals;
-import static org.mockito.Mockito.when;
-import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
-@RunWith(MockitoJUnitRunner.class)
-@ContextConfiguration
-@WebAppConfiguration
-public class MyControllerTest {
-  
-  @Mock
-  private SecurityContext securityContext;
-
-  @Autowired
-  private WebApplicationContext wac;
-
-  private MockMvc mockMvc;
-
-  @Test
-  public void testMethod() throws Exception {
-    List<GrantedAuthority> authorities = new ArrayList<>();
-    authorities.add(new SimpleGrantedAuthority("user_read"));
-    
-    when(securityContext.getAuthentication().getAuthorities()).thenReturn(authorities);
-    SecurityContextHolder.setContext(securityContext);
-
-    this.mockMvc = MockMvcBuilders.webAppContextSetup(this.wac)
-        .apply(springSecurity())
-        .build();
-
-    this.mockMvc.perform(get("/my-url"))
-        .andExpect(status().isOk())
-        .andExpect(result -> {
-          // Assert the response body
-        });
-  }
+private String getAccessToken() throws Exception {
+    // Use the JWTAuthFilter mock to return a valid access token for the test user
+    String accessToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c";
+    when(jwtAuthFilter.getAccessToken(any(HttpServletRequest.class))).thenReturn(accessToken);
+    return accessToken;
 }
-
-
-
-```
-POST https://login.microsoftonline.com/{tenant}/oauth2/v2.0/token
-Content-Type: application/x-www-form-urlencoded
-
-client_id={client_id}
-&scope=https://graph.microsoft.com/.default
-&refresh_token={refresh_token}
-&grant_type=refresh_token
-&client_secret={client_secret}
-

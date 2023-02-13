@@ -1,8 +1,9 @@
 ```
-SecureRandom secureRandom = new SecureRandom();
-byte[] fakeKeyBytes = new byte[1024];
-secureRandom.nextBytes(fakeKeyBytes);
 
-KeyFactory keyFactory = KeyFactory.getInstance("RSA");
-X509EncodedKeySpec keySpec = new X509EncodedKeySpec(fakeKeyBytes);
-PublicKey fakePublicKey = keyFactory.generatePublic(keySpec);
+String fakeToken = JWT.create()
+                .withIssuer("https://sts.windows.net/{tenantid}/")
+                .withSubject("user@example.com")
+                .withArrayClaim("roles", new String[]{"admin"})
+                .withClaim("authorities", "ADMIN")
+                .withExpiresAt(new Date(System.currentTimeMillis() + 864000000))
+                .sign(Algorithm.RSA256(fakePublicKey));
